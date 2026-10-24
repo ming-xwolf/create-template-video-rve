@@ -1,0 +1,5 @@
+{
+  "id": "rve-column",
+  "name": "RVE Column",
+  "description": "柱状图，高度由数据决定，CSS 动画生长。改编自 bar-chart（MIT）。"
+}

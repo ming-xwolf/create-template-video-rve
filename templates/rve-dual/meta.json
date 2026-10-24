@@ -1,0 +1,5 @@
+{
+  "id": "rve-dual",
+  "name": "RVE Dual",
+  "description": "双序列面积对比图，数据驱动，CSS 描边动画。改编自 dual-area（MIT）。"
+}

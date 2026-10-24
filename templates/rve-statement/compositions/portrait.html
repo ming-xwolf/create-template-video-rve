@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1080, height=1920" />
+<title>Bold Poster · Portrait 9:16</title>
+<style>
+  @font-face{font-family:'Noto Sans SC';src:url('../assets/fonts/NotoSansSC-subset.woff2') format('woff2');font-weight:100 900;font-style:normal;font-display:block;}
+  /*
+   * frame-bold-poster — PORTRAIT 9:16 (1080×1920) variant of index.html.
+   * Same palette, type stack and CSS @keyframes timeline, re-laid out
+   * vertically: kicker → giant figure → 3-line headline → serif standfirst
+   * → footer. See NOTICE for attribution.
+   */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: #04060f; }
+  #root {
+    position: relative; width: 1080px; height: 1920px;
+    background: #04060f; color: #eef3fb;
+    font-family: 'Noto Sans SC', sans-serif;
+  }
+
+  .sheet { position: absolute; inset: 0; background: #04060f;
+    opacity: 0; animation: sheetIn 0.5s ease-out forwards; }
+  @keyframes sheetIn { to { opacity: 1; } }
+
+  /* top kicker */
+  .kicker { position: absolute; top: 130px; left: 80px; right: 80px;
+    display: flex; align-items: center; gap: 24px; }
+  .kicker .label { font-size: 26px; font-weight: 700; letter-spacing: 5px;
+    text-transform: uppercase; color: #eef3fb; white-space: nowrap;
+    opacity: 0; animation: fade 0.5s ease-out 0.35s forwards; }
+  .kicker .rule { flex: 1; height: 3px; background: #38bdf8; transform-origin: left center;
+    transform: scaleX(0); animation: ruleX 0.8s cubic-bezier(0.16,1,0.3,1) 0.5s forwards; }
+  .kicker .date { font-size: 24px; font-weight: 500; letter-spacing: 2px;
+    text-transform: uppercase; color: #9db0d6; white-space: nowrap;
+    opacity: 0; animation: fade 0.5s ease-out 0.55s forwards; }
+  @keyframes ruleX { to { transform: scaleX(1); } }
+
+  /* giant gradient figure near the top */
+  .figure { position: absolute; top: 280px; right: 70px;
+    font-family: 'Noto Sans SC', sans-serif; font-weight: 900;
+    font-size: 360px; line-height: 0.8; letter-spacing: -4px;
+    background: linear-gradient(150deg, #7dd3fc 0%, #38bdf8 42%, #9d7bff 100%);
+    filter: drop-shadow(0 0 60px rgba(56,189,248,0.30)) drop-shadow(0 0 22px rgba(157,123,255,0.26));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    opacity: 0; transform: translateY(-60px) rotate(-14deg);
+    animation: figureIn 0.9s cubic-bezier(0.16,1,0.3,1) 0.7s forwards; }
+  @keyframes figureIn { to { opacity: 1; transform: translateY(0) rotate(-6deg); } }
+
+  /* three-line headline */
+  .head { position: absolute; left: 80px; right: 80px; top: 840px;
+    font-family: 'Noto Sans SC', sans-serif; font-weight: 900; line-height: 0.98; }
+  .head .ln { display: block; font-size: 124px; opacity: 0; transform: translateY(40px); }
+  .head .ln1 { color: #eef3fb; transform-origin: left bottom; animation: lineUp 0.7s cubic-bezier(0.16,1,0.3,1) 1.15s forwards; }
+  .head .ln2 { color: #38bdf8; animation: lineUpTilt 0.7s cubic-bezier(0.16,1,0.3,1) 1.35s forwards; }
+  .head .ln3 { color: #eef3fb; animation: lineUpTilt2 0.7s cubic-bezier(0.16,1,0.3,1) 1.55s forwards; }
+  @keyframes lineUp { to { opacity: 1; transform: translateY(0) rotate(-2deg); } }
+  @keyframes lineUpTilt { to { opacity: 1; transform: translateY(0) rotate(-4deg); } }
+  @keyframes lineUpTilt2 { to { opacity: 1; transform: translateY(0) rotate(2deg); } }
+
+  /* standfirst */
+  .standfirst { position: absolute; left: 84px; right: 84px; top: 1320px;
+    font-family: 'Noto Sans SC', sans-serif; font-style: italic; font-weight: 500;
+    font-size: 40px; line-height: 1.45; color: #9db0d6;
+    opacity: 0; animation: fadeUp 0.7s ease-out 1.95s forwards; }
+  @keyframes fadeUp { 0%{opacity:0;transform:translateY(22px)} 100%{opacity:1;transform:translateY(0)} }
+
+  /* footer */
+  .footer { position: absolute; left: 80px; right: 80px; bottom: 130px; }
+  .footer .rule { height: 2px; background: rgba(255,255,255,0.10); transform-origin: left center;
+    transform: scaleX(0); animation: ruleX 0.7s cubic-bezier(0.16,1,0.3,1) 2.15s forwards; }
+  .footer .meta { display: flex; justify-content: space-between; margin-top: 18px;
+    font-size: 22px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase;
+    color: #9db0d6; opacity: 0; animation: fade 0.6s ease-out 2.4s forwards; }
+  .footer .meta .red { color: #38bdf8; }
+
+  @keyframes fade { to { opacity: 1; } }
+
+  /* floating bubbles */
+  @keyframes fb1 { 0%,100%{transform:translate(0,0) scale(1)} 40%{transform:translate(22px,-38px) scale(1.06)} 70%{transform:translate(-16px,-18px) scale(0.94)} }
+  @keyframes fb2 { 0%,100%{transform:translate(0,0) scale(1.02)} 35%{transform:translate(-28px,26px) scale(0.92)} 68%{transform:translate(18px,-32px) scale(1.08)} }
+  @keyframes fb3 { 0%,100%{transform:translate(0,0) scale(0.96)} 45%{transform:translate(16px,34px) scale(1.1)} 80%{transform:translate(-20px,14px) scale(0.94)} }
+  @keyframes fb4 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(-26px,-26px) scale(1.07)} }
+  .bubble {
+    position: absolute; border-radius: 50%; pointer-events: none; z-index: 1;
+  }
+  .bb1 {
+    width: 110px; height: 110px; top: 10%; left: 7%;
+    background: radial-gradient(circle at 35% 35%, rgba(56,189,248,0.18), rgba(56,189,248,0.03));
+    border: 1.5px solid rgba(56,189,248,0.15);
+    box-shadow: 0 0 28px rgba(56,189,248,0.1), inset 0 0 18px rgba(56,189,248,0.05);
+    animation: fb1 15s ease-in-out infinite;
+  }
+  .bb2 {
+    width: 76px; height: 76px; top: 35%; right: 8%;
+    background: radial-gradient(circle at 35% 30%, rgba(56,189,248,0.2), rgba(56,189,248,0.03));
+    border: 1.5px solid rgba(56,189,248,0.16);
+    box-shadow: 0 0 22px rgba(56,189,248,0.12), inset 0 0 14px rgba(56,189,248,0.05);
+    animation: fb2 11s ease-in-out infinite;
+  }
+  .bb3 {
+    width: 140px; height: 140px; bottom: 15%; right: 6%;
+    background: radial-gradient(circle at 40% 35%, rgba(157,123,255,0.14), rgba(157,123,255,0.02));
+    border: 1.5px solid rgba(157,123,255,0.12);
+    box-shadow: 0 0 32px rgba(157,123,255,0.09), inset 0 0 20px rgba(157,123,255,0.04);
+    animation: fb3 17s ease-in-out infinite;
+  }
+  .bb4 {
+    width: 64px; height: 64px; bottom: 30%; left: 5%;
+    background: radial-gradient(circle at 38% 32%, rgba(157,123,255,0.2), rgba(157,123,255,0.03));
+    border: 1.5px solid rgba(157,123,255,0.14);
+    box-shadow: 0 0 18px rgba(157,123,255,0.1), inset 0 0 10px rgba(157,123,255,0.04);
+    animation: fb4 9s ease-in-out infinite;
+  }
+
+  /* ===== RVE house style — shared by every template in this pack ===== */
+  :root {
+    --rve-bg: #04060f; --rve-bg2: #0a1120; --rve-ink: #eef3fb;
+    --rve-muted: #9db0d6; --rve-accent: #38bdf8;
+    --rve-accent2: #22d3ee; --rve-violet: #9d7bff;
+  }
+  /* ambient blooms — the signature RVE backdrop */
+  #root::before {
+    content: ""; position: absolute; inset: -8%; z-index: 0; pointer-events: none;
+    background:
+      radial-gradient(46% 34% at 78% 12%, rgba(56,189,248,.18), transparent 62%),
+      radial-gradient(52% 40% at 14% 88%, rgba(157,123,255,.14), transparent 66%);
+  }
+  /* film grain — keeps flat dark areas from banding */
+  #root::after {
+    content: ""; position: absolute; inset: 0; z-index: 99; pointer-events: none; opacity: .05;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+</style>
+</head>
+<body>
+  <div
+    id="root"
+    data-composition-id="main"
+    data-start="0"
+    data-duration="5"
+    data-width="1080"
+    data-height="1920"
+    data-composition-variables='{"kicker":"宣言","date":"第 04 期","figure":"03","headline":["响一点","久一点","才算数。"],"standfirst":"每一页都该像印出来的海报——大字号、一个红色重音、用墨线框住。","footer_left":"粗体海报","footer_right":"本地演示"}'
+  >
+    <div class="bubble bb1"></div>
+    <div class="bubble bb2"></div>
+    <div class="bubble bb3"></div>
+    <div class="bubble bb4"></div>
+
+    <div class="sheet"></div>
+
+    <div class="kicker">
+      <span class="label"></span>
+      <span class="rule"></span>
+      <span class="date"></span>
+    </div>
+
+    <div class="figure"></div>
+
+    <div class="head">
+      <span class="ln ln1"></span>
+      <span class="ln ln2"></span>
+      <span class="ln ln3"></span>
+    </div>
+
+    <div class="standfirst"></div>
+
+    <div class="footer">
+      <div class="rule"></div>
+      <div class="meta">
+        <span class="meta-left"></span>
+        <span class="red meta-right"></span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var v = (window.__hyperframes &&
+               typeof window.__hyperframes.getVariables === "function")
+        ? window.__hyperframes.getVariables() : {};
+      var set = function (sel, text) {
+        var el = document.querySelector(sel);
+        if (el && text != null) el.textContent = String(text);
+      };
+      var head = Array.isArray(v.headline) ? v.headline : [];
+      set(".kicker .label", v.kicker);
+      set(".kicker .date", v.date);
+      set(".figure", v.figure);
+      set(".head .ln1", head[0]);
+      set(".head .ln2", head[1]);
+      set(".head .ln3", head[2]);
+      set(".standfirst", v.standfirst);
+      set(".footer .meta-left", v.footer_left);
+      set(".footer .meta-right", v.footer_right);
+    })();
+
+    window.__timelines = window.__timelines || {};
+    window.__timelines["main"] = { pause: function () {}, seek: function () {}, paused: function () { return true; } };
+  </script>
+</body>
+</html>

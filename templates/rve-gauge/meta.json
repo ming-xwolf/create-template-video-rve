@@ -1,0 +1,5 @@
+{
+  "id": "rve-gauge",
+  "name": "RVE Gauge",
+  "description": "环形仪表：SVG 描边 + CSS 计数器，逐帧可渲染。改编自 radial-gauge（MIT）。"
+}

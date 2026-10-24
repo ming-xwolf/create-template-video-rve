@@ -1,0 +1,5 @@
+{
+  "id": "rve-counter",
+  "name": "RVE Counter",
+  "description": "单一数字计数页（CSS 计数器，可逐帧渲染），改编自 stat-counter（MIT）。"
+}

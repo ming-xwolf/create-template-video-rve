@@ -1,0 +1,5 @@
+{
+  "id": "rve-metrics",
+  "name": "RVE Metrics",
+  "description": "指标墙：2–6 个 KPI 磁贴，数字用 CSS 计数器滚动。改编自 metric-grid（MIT）。"
+}

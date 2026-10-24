@@ -1,0 +1,5 @@
+{
+  "id": "rve-liquid",
+  "name": "RVE Liquid",
+  "description": "液位计数器：大号百分比 + 液面上升。改编自 liquid-counter（MIT）。"
+}

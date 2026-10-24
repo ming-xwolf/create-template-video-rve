@@ -1,0 +1,5 @@
+{
+  "id": "rve-line",
+  "name": "RVE Line",
+  "description": "折线图：由数据生成 SVG 路径，CSS 描边动画逐帧可渲染。改编自 signal-line（MIT）。"
+}

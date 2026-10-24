@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="zh">
+<head><meta charset="utf-8"><title>RVE Column Chart</title>
+<style>
+  @font-face{font-family:'Noto Sans SC';src:url('assets/fonts/NotoSansSC-subset.woff2') format('woff2');font-weight:100 900;font-style:normal;font-display:block;}
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:1920px; height:1080px; overflow:hidden; background:#04060f; }
+  #root { position:relative; width:1920px; height:1080px; overflow:hidden;
+    background: radial-gradient(70% 50% at 78% 10%, rgba(56,189,248,.14), transparent 62%),
+                radial-gradient(60% 45% at 10% 90%, rgba(157,123,255,.12), transparent 66%),
+                #04060f;
+    font-family: 'Noto Sans SC', sans-serif; color:#eef3fb; }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+  .grain { position:absolute; inset:0; width:100%; height:100%; opacity:.05; mix-blend-mode:overlay; pointer-events:none; }
+
+  .head { position:absolute; left:110px; right:110px; top:90px;
+    opacity:0; animation:fadeUp .7s ease-out .2s forwards; }
+  .kicker { font-size:30px; letter-spacing:.3em; text-transform:uppercase; color:#38bdf8; font-weight:600; }
+  .title { margin-top:16px; font-size:58px; font-weight:800; letter-spacing:-.02em; }
+  .cols { position:absolute; left:110px; right:110px; bottom:120px; height:620px;
+    display:flex; align-items:flex-end; gap:34px; }
+  .col { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%; }
+  .val { font-size:38px; font-weight:800; font-variant-numeric:tabular-nums; margin-bottom:22px;
+    background:linear-gradient(150deg,#7dd3fc,#9d7bff);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+    opacity:0; animation:fadeUp .5s ease-out var(--d) forwards; }
+  .bar { width:100%; border-radius:14px 14px 6px 6px; height:0;
+    background:linear-gradient(180deg,#38bdf8,#9d7bff);
+    box-shadow:0 0 26px rgba(56,189,248,.35);
+    animation:grow 1.5s cubic-bezier(.22,1,.36,1) var(--d) forwards; }
+  @keyframes grow { to { height:var(--h); } }
+  .lab { margin-top:18px; font-size:26px; color:#9db0d6; letter-spacing:.06em;
+    opacity:0; animation:fadeUp .5s ease-out calc(var(--d) + .25s) forwards; }
+
+</style></head>
+<body>
+  <div id="root" data-composition-id="main" data-start="0" data-duration="8"
+       data-width="1920" data-height="1080"
+       data-composition-variables='{"kicker": "月度", "title": "六个月的变化", "items": [{"label": "一月", "value": 62}, {"label": "二月", "value": 78}, {"label": "三月", "value": 95}, {"label": "四月", "value": 84}, {"label": "五月", "value": 91}, {"label": "六月", "value": 100}]}'>
+
+    <div class="head"><div class="kicker"></div><div class="title"></div></div>
+    <div class="cols" id="cols"></div>
+
+  </div>
+  <script>
+    (function () {
+      var v = (window.__hyperframes && typeof window.__hyperframes.getVariables === "function")
+        ? window.__hyperframes.getVariables() : {};
+      var items = Array.isArray(v.items) ? v.items.slice(0, 6) : [
+        { label: "一月", value: 62 }, { label: "二月", value: 78 }, { label: "三月", value: 95 }, { label: "四月", value: 84 } ];
+      var max = 1;
+      items.forEach(function (it) { max = Math.max(max, Number(it.value) || 0); });
+      var host = document.getElementById("cols"), html = "";
+      items.forEach(function (it, i) {
+        var h = Math.max(3, (Number(it.value) || 0) / max * 58);
+        html += '<div class="col"><span class="val" style="--d:' + (0.55 + i * 0.12).toFixed(2) + 's"></span>' +
+                '<div class="bar" style="--h:' + h.toFixed(1) + '%;--d:' + (0.3 + i * 0.12).toFixed(2) + 's"></div>' +
+                '<span class="lab" style="--d:' + (0.55 + i * 0.12).toFixed(2) + 's"></span></div>';
+      });
+      host.innerHTML = html;
+      var cols = host.querySelectorAll(".col");
+      items.forEach(function (it, i) {
+        cols[i].querySelector(".val").textContent = Number(it.value || 0).toLocaleString();
+        cols[i].querySelector(".lab").textContent = it.label || "";
+      });
+      var set = function (sel, x) { var el = document.querySelector(sel); if (el && x != null) el.textContent = String(x); };
+      set(".kicker", v.kicker); set(".title", v.title);
+
+    })();
+    window.__timelines = window.__timelines || {};
+    window.__timelines["main"] = { pause:function(){}, seek:function(){}, paused:function(){ return true; } };
+</script>
+</body></html>

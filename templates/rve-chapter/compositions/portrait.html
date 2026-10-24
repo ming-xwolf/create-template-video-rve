@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="zh">
+<head><meta charset="utf-8"><title>RVE Chapter</title>
+<style>
+  @font-face{font-family:'Noto Sans SC';src:url('../assets/fonts/NotoSansSC-subset.woff2') format('woff2');font-weight:100 900;font-style:normal;font-display:block;}
+  /* 章节卡：改编自 hyperframes-templates / kinetic-title（MIT）。
+     原版用 background-position 扫光 + blur 上升，都是 CSS 动画，可逐帧渲染。 */
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:1080px; height:1920px; overflow:hidden; background:#04060f; }
+  #root { position:relative; width:1080px; height:1920px; overflow:hidden;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    background: radial-gradient(120% 110% at 50% 0%, #101a2e 0%, #070c18 58%, #04060f 100%);
+    font-family: 'Noto Sans SC', sans-serif; color:#eef3fb; }
+  .kicker { font-size:28px; letter-spacing:.44em; text-transform:uppercase; color:#38bdf8;
+    font-weight:600; margin-bottom:34px; opacity:0; animation:rise .8s cubic-bezier(.2,.7,.2,1) .15s both; }
+  .title { font-size:112px; font-weight:800; letter-spacing:-.03em; line-height:1.08;
+    background:linear-gradient(90deg,#7dd3fc 0%,#eef3fb 18%,#38bdf8 40%,#9d7bff 68%,#7dd3fc 100%);
+    background-size:300% 100%;
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+    filter:drop-shadow(0 0 40px rgba(56,189,248,.22));
+    animation:rise 1s cubic-bezier(.2,.7,.2,1) .3s both, sweep 5s linear infinite; }
+  @keyframes rise { from { opacity:0; transform:translateY(.4em); filter:blur(14px); }
+                     to { opacity:1; transform:translateY(0); filter:blur(0); } }
+  @keyframes sweep { to { background-position:300% 0; } }
+  .rule { position:absolute; left:88px; right:88px; height:1px; background:rgba(255,255,255,.10);
+    transform:scaleX(0); animation:grow .9s cubic-bezier(.16,1,.3,1) .5s forwards; }
+  @keyframes grow { to { transform:scaleX(1); } }
+  .rt { top:422px; } .rb { bottom:422px; }
+  .grain { position:absolute; inset:0; width:100%; height:100%; opacity:.05; mix-blend-mode:overlay; pointer-events:none; }
+</style></head>
+<body>
+  <div id="root" data-composition-id="main" data-start="0" data-duration="6"
+       data-width="1080" data-height="1920"
+       data-composition-variables='{"kicker":"第一章","title":"价格战之后"}'>
+    <div class="rule rt"></div>
+    <div class="kicker"></div>
+    <div class="title"></div>
+    <div class="rule rb"></div>
+  </div>
+  <script>
+    (function () {
+      var v = (window.__hyperframes && typeof window.__hyperframes.getVariables === "function")
+        ? window.__hyperframes.getVariables() : {};
+      var set = function (s, x) { var e = document.querySelector(s); if (e && x != null) e.textContent = String(x); };
+      set(".kicker", v.kicker); set(".title", v.title);
+    })();
+    window.__timelines = window.__timelines || {};
+    window.__timelines["main"] = { pause:function(){}, seek:function(){}, paused:function(){ return true; } };
+  </script>
+</body></html>

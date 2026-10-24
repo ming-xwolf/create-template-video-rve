@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="zh">
+<head><meta charset="utf-8"><title>RVE Metrics</title>
+<style>
+  @font-face{font-family:'Noto Sans SC';src:url('assets/fonts/NotoSansSC-subset.woff2') format('woff2');font-weight:100 900;font-style:normal;font-display:block;}
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:1920px; height:1080px; overflow:hidden; background:#04060f; }
+  #root { position:relative; width:1920px; height:1080px; overflow:hidden; background: radial-gradient(70% 50% at 78% 10%, rgba(56,189,248,.14), transparent 62%), radial-gradient(60% 45% at 10% 90%, rgba(157,123,255,.12), transparent 66%), #04060f;
+    font-family:'Noto Sans SC', sans-serif; color:#eef3fb; }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
+
+  @property --n { syntax:"<integer>"; inherits:false; initial-value:0; }
+  @keyframes count { from { --n:0; } to { --n:var(--to); } }
+  .head { position:absolute; left:110px; right:110px; top:84px;
+    opacity:0; animation:fadeUp .7s ease-out .15s forwards; }
+  .kicker { font-size:22px; letter-spacing:.3em; text-transform:uppercase; color:#38bdf8; font-weight:600; }
+  .title { margin-top:14px; font-size:52px; font-weight:800; letter-spacing:-.02em; }
+  .grid { position:absolute; left:110px; right:110px; top:240px;
+    display:grid; grid-template-columns:1fr 1fr; gap:26px; }
+  .tile { border-radius:26px; padding:26px;
+    background:rgba(255,255,255,.052); border:1px solid rgba(255,255,255,.10);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.07), 0 22px 50px rgba(0,0,0,.35);
+    opacity:0; animation:fadeUp .7s cubic-bezier(.16,1,.3,1) var(--d) forwards; }
+  .top { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+  .lbl { font-size:22px; color:#9db0d6; letter-spacing:.04em; }
+  .chip { font-size:19px; font-weight:700; color:#34d399;
+    background:rgba(52,211,153,.13); border:1px solid rgba(52,211,153,.26);
+    padding:4px 11px; border-radius:999px; white-space:nowrap; }
+  .chip.down { color:#ff5470; background:rgba(255,84,112,.13); border-color:rgba(255,84,112,.26); }
+  .num { margin-top:16px; font-size:72px; font-weight:800; letter-spacing:-.03em;
+    font-variant-numeric:tabular-nums;
+    background:linear-gradient(150deg,#7dd3fc,#9d7bff);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+    counter-reset: v var(--n); animation:count 1.25s cubic-bezier(.22,1,.36,1) var(--d) forwards; }
+  .num::after { content: counter(v) attr(data-suffix); }
+  .spark { margin-top:12px; width:100%; height:48px; }
+  .spark path.line { fill:none; stroke:#38bdf8; stroke-width:3; stroke-linejoin:round; stroke-linecap:round;
+    stroke-dasharray:var(--len,600); stroke-dashoffset:var(--len,600);
+    animation:draw 1.2s cubic-bezier(.22,.61,.36,1) calc(var(--d) + .35s) forwards; }
+  @keyframes draw { to { stroke-dashoffset:0; } }
+
+</style></head>
+<body>
+  <div id="root" data-composition-id="main" data-start="0" data-duration="8"
+       data-width="1920" data-height="1080"
+       data-composition-variables='{"kicker": "季度", "title": "四个关键指标", "items": [{"label": "调用量", "value": 128, "suffix": "万", "delta": "+18%"}, {"label": "单次成本", "value": 41, "suffix": "元", "delta": "-12%"}, {"label": "平均延迟", "value": 220, "suffix": "ms", "delta": "+6%"}, {"label": "准确率", "value": 94, "suffix": "%", "delta": "+3%"}]}'>
+
+    <div class="head"><div class="kicker"></div><div class="title"></div></div>
+    <div class="grid" id="grid"></div>
+
+  </div>
+  <script>
+    (function () {
+      var v = (window.__hyperframes && typeof window.__hyperframes.getVariables === "function")
+        ? window.__hyperframes.getVariables() : {};
+      var items = Array.isArray(v.items) ? v.items.slice(0, 6) : [
+        { label: "调用量", value: 128, suffix: "万", delta: "+18%" },
+        { label: "成本", value: 41, suffix: "元", delta: "-12%" },
+        { label: "延迟", value: 220, suffix: "ms", delta: "+6%" },
+        { label: "准确率", value: 94, suffix: "%", delta: "+3%" } ];
+      var host = document.getElementById("grid"), html = "";
+      items.forEach(function (it, i) {
+        var d = (0.25 + i * 0.13).toFixed(2);
+        html += '<div class="tile" style="--d:' + d + 's">' +
+          '<div class="top"><span class="lbl"></span><span class="chip"></span></div>' +
+          '<div class="num" style="--d:' + d + 's"></div>' +
+          '<svg class="spark" viewBox="0 0 120 40" preserveAspectRatio="none">' +
+            '<path class="line" style="--d:' + d + 's"/></svg></div>';
+      });
+      host.innerHTML = html;
+      host.querySelectorAll(".tile").forEach(function (tile, i) {
+        var it = items[i], d = 0.25 + i * 0.13;
+        tile.querySelector(".lbl").textContent = it.label == null ? "" : String(it.label);
+        var chip = tile.querySelector(".chip");
+        chip.textContent = it.delta == null ? "" : String(it.delta);
+        if (String(it.delta || "").indexOf("-") === 0) chip.classList.add("down");
+        var num = tile.querySelector(".num");
+        num.setAttribute("data-suffix", it.suffix == null ? "" : String(it.suffix));
+        num.style.setProperty("--to", String(Math.round(Number(it.value) || 0)));
+        var path = tile.querySelector("path.line"), pts = [], seed = i * 7 + 3;
+        for (var k = 0; k < 9; k++) pts.push([k * 15, 8 + ((seed * (k + 3) * 13) % 26)]);
+        path.setAttribute("d", pts.map(function (p, j) { return (j ? "L" : "M") + p[0] + " " + p[1]; }).join(" "));
+        var len = path.getTotalLength ? path.getTotalLength() : 600;
+        path.style.strokeDasharray = len; path.style.strokeDashoffset = len;
+      });
+
+      var set = function (sel, x) { var el = document.querySelector(sel); if (el && x != null) el.textContent = String(x); };
+      set(".kicker", v.kicker); set(".title", v.title);
+    })();
+    window.__timelines = window.__timelines || {};
+    window.__timelines["main"] = { pause:function(){}, seek:function(){}, paused:function(){ return true; } };
+</script>
+</body></html>

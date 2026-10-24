@@ -1,0 +1,5 @@
+{
+  "id": "rve-lower-third",
+  "name": "RVE Lower Third",
+  "description": "透明背景的下三分之一条（人名+身份），由 pipeline 合成到基础镜头之上。改编自 lower-third（MIT）。"
+}

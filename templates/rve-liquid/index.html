@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="zh">
+<head><meta charset="utf-8"><title>RVE Liquid</title>
+<style>
+  @font-face{font-family:'Noto Sans SC';src:url('assets/fonts/NotoSansSC-subset.woff2') format('woff2');font-weight:100 900;font-style:normal;font-display:block;}
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:1920px; height:1080px; overflow:hidden; background:#04060f; }
+  #root { position:relative; width:1920px; height:1080px; overflow:hidden; background: radial-gradient(70% 50% at 78% 10%, rgba(56,189,248,.14), transparent 62%), radial-gradient(60% 45% at 10% 90%, rgba(157,123,255,.12), transparent 66%), #04060f;
+    font-family:'Noto Sans SC', sans-serif; color:#eef3fb; }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
+
+  @property --n { syntax:"<integer>"; inherits:false; initial-value:0; }
+  @keyframes count { from { --n:0; } to { --n:var(--to); } }
+  /* 16:9：左文案 + 右液柱 */
+  .label { position:absolute; left:160px; top:50%; transform:translateY(-50%); width:780px; text-align:left;
+    opacity:0; animation:fadeUp .8s ease-out .2s forwards; }
+  .kicker { font-size:30px; letter-spacing:.34em; text-transform:uppercase; color:#38bdf8; font-weight:600; }
+  .title { margin-top:22px; font-size:88px; font-weight:800; letter-spacing:-.02em; line-height:1.2; }
+  .vial { position:absolute; right:190px; top:50%; margin-top:-250px;
+    width:440px; height:500px; border-radius:34px; overflow:hidden;
+    background:rgba(255,255,255,.045); border:1px solid rgba(255,255,255,.12);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.08), 0 30px 70px rgba(0,0,0,.45); }
+  .fill { position:absolute; left:0; right:0; bottom:0; height:0;
+    background:linear-gradient(180deg, rgba(56,189,248,.85), rgba(157,123,255,.9));
+    animation:fill 1.8s cubic-bezier(.22,1,.36,1) .5s forwards; }
+  @keyframes fill { to { height:var(--to); } }
+  .fill::before { content:""; position:absolute; left:-50%; right:-50%; top:40px; height:40px;
+    background:inherit; border-radius:50%; animation:wave 3.4s linear infinite; }
+  @keyframes wave { from { transform:translateX(0); } to { transform:translateX(50%); } }
+  .digits { position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font-size:118px; font-weight:900; letter-spacing:-.04em; color:#eef3fb;
+    text-shadow:0 6px 30px rgba(0,0,0,.55); counter-reset: v var(--n);
+    animation:count 1.8s cubic-bezier(.22,1,.36,1) .5s forwards; }
+  .digits::after { content: counter(v) attr(data-suffix); }
+  .caption { position:absolute; left:160px; bottom:130px; width:780px; text-align:left;
+    font-size:28px; color:#9db0d6; line-height:1.6;
+    opacity:0; animation:fadeUp .8s ease-out 1.9s forwards; }
+
+</style></head>
+<body>
+  <div id="root" data-composition-id="main" data-start="0" data-duration="8"
+       data-width="1920" data-height="1080"
+       data-composition-variables='{"kicker": "转化", "title": "三个月的变化", "value": 72, "suffix": "%", "caption": "液面高度就是完成度。"}'>
+
+    <div class="label"><div class="kicker"></div><div class="title"></div></div>
+    <div class="vial">
+      <div class="fill" id="fillbox"></div>
+      <div class="digits" id="digits"></div>
+    </div>
+    <div class="caption"></div>
+
+  </div>
+  <script>
+    (function () {
+      var v = (window.__hyperframes && typeof window.__hyperframes.getVariables === "function")
+        ? window.__hyperframes.getVariables() : {};
+      var pct = Math.max(0, Math.min(100, Number(v.value) || 0));
+      var digits = document.getElementById("digits");
+      digits.setAttribute("data-suffix", v.suffix == null ? "%" : String(v.suffix));
+      digits.style.setProperty("--to", String(Math.round(pct)));
+      document.getElementById("fillbox").style.setProperty("--to", pct.toFixed(1) + "%");
+      var cap = document.querySelector(".caption");
+      if (cap && v.caption != null) cap.textContent = String(v.caption);
+
+      var set = function (sel, x) { var el = document.querySelector(sel); if (el && x != null) el.textContent = String(x); };
+      set(".kicker", v.kicker); set(".title", v.title);
+    })();
+    window.__timelines = window.__timelines || {};
+    window.__timelines["main"] = { pause:function(){}, seek:function(){}, paused:function(){ return true; } };
+</script>
+</body></html>

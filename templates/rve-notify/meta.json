@@ -1,0 +1,5 @@
+{
+  "id": "rve-notify",
+  "name": "RVE Notify",
+  "description": "消息堆叠：多条通知依次落位。改编自 notification-stack（MIT），弹簧物理改为 CSS 槽位动画。"
+}

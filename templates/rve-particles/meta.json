@@ -1,0 +1,5 @@
+{
+  "id": "rve-particles",
+  "name": "RVE Particles",
+  "description": "粒子汇聚式标题（近似实现）：散点飞向文字 + 逐字模糊聚焦 + 扫光。改编自 particle-wordmark（MIT）。"
+}

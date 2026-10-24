@@ -1,0 +1,5 @@
+{
+  "id": "rve-bars",
+  "name": "RVE Bars",
+  "description": "横向排行榜：条形宽度由 CSS 动画增长。改编自 ranked-bars（MIT）。"
+}

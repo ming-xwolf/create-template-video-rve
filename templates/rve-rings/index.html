@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="zh">
+<head><meta charset="utf-8"><title>RVE Rings</title>
+<style>
+  @font-face{font-family:'Noto Sans SC';src:url('assets/fonts/NotoSansSC-subset.woff2') format('woff2');font-weight:100 900;font-style:normal;font-display:block;}
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:1920px; height:1080px; overflow:hidden; background:#04060f; }
+  #root { position:relative; width:1920px; height:1080px; overflow:hidden;
+    background: radial-gradient(70% 50% at 78% 10%, rgba(56,189,248,.14), transparent 62%),
+                radial-gradient(60% 45% at 10% 90%, rgba(157,123,255,.12), transparent 66%), #04060f;
+    font-family:'Noto Sans SC', sans-serif; color:#eef3fb; }
+  @property --n { syntax:"<integer>"; inherits:false; initial-value:0; }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes count { from { --n:0; } to { --n:var(--to); } }
+  .head { position:absolute; left:110px; right:110px; top:80px;
+    opacity:0; animation:fadeUp .7s ease-out .15s forwards; }
+  .kicker { font-size:22px; letter-spacing:.3em; text-transform:uppercase; color:#38bdf8; font-weight:600; }
+  .title { margin-top:14px; font-size:52px; font-weight:800; letter-spacing:-.02em; }
+  .rings { position:absolute; left:50%; top:180px; transform:translateX(-50%);
+    width:560px; height:560px; }
+  .rings svg { width:100%; height:100%; overflow:visible; }
+  .track { fill:none; stroke:rgba(255,255,255,.075); }
+  /* 弧线用 stroke-dashoffset 推进；--off 由数据算出，单一 keyframes 适配任意百分比 */
+  .arc { fill:none; stroke-linecap:round;
+    stroke-dasharray:var(--c); stroke-dashoffset:var(--c);
+    transform:rotate(-90deg); transform-origin:110px 110px;
+    animation:draw 1.5s cubic-bezier(.22,1,.36,1) var(--d) forwards; }
+  @keyframes draw { to { stroke-dashoffset:var(--off); } }
+  .legend { position:absolute; left:110px; right:110px; top:640px;
+    display:flex; flex-direction:column; gap:14px; }
+  .item { display:flex; align-items:center; gap:16px; padding:16px 22px;
+    border-radius:18px; background:rgba(255,255,255,.045);
+    border:1px solid rgba(255,255,255,.09);
+    opacity:0; animation:fadeUp .6s cubic-bezier(.16,1,.3,1) var(--d) forwards; }
+  .swatch { width:14px; height:14px; border-radius:50%; flex:0 0 auto; }
+  .k { font-size:26px; color:#c7d3ea; letter-spacing:.04em; }
+  .pct { margin-left:auto; font-size:32px; font-weight:800; font-variant-numeric:tabular-nums;
+    background:linear-gradient(150deg,#7dd3fc,#9d7bff);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+    counter-reset: v var(--n); animation:count 1.5s cubic-bezier(.22,1,.36,1) var(--d) forwards; }
+  .pct::after { content: counter(v) attr(data-suffix); }
+</style></head>
+<body>
+  <div id="root" data-composition-id="main" data-start="0" data-duration="8"
+       data-width="1920" data-height="1080"
+       data-composition-variables='{"kicker":"分布","title":"三项时间占比","items":[]}'>
+    <div class="head"><div class="kicker"></div><div class="title"></div></div>
+    <div class="rings"><svg viewBox="0 0 220 220" id="svg"></svg></div>
+    <div class="legend" id="legend"></div>
+  </div>
+  <script>
+    (function () {
+      var v = (window.__hyperframes && typeof window.__hyperframes.getVariables === "function")
+        ? window.__hyperframes.getVariables() : {};
+      var items = Array.isArray(v.items) ? v.items.slice(0, 3) : [
+        { label: "移动", value: 86 }, { label: "专注", value: 62 }, { label: "休息", value: 41 } ];
+      var R = [92, 70, 48], COL = ["#38bdf8", "#c084fc", "#a3e635"];
+      var svg = document.getElementById("svg"), legend = document.getElementById("legend");
+      var s = "", l = "";
+      for (var i = 0; i < 3; i++) {
+        var it = items[i] || { label: "", value: 0 };
+        var pct = Math.max(0, Math.min(100, Number(it.value) || 0));
+        var C = 2 * Math.PI * R[i];
+        var off = C * (1 - pct / 100);
+        var d = (0.3 + i * 0.28).toFixed(2) + "s";
+        s += '<circle class="track" cx="110" cy="110" r="' + R[i] + '" stroke-width="10"/>';
+        s += '<circle class="arc" cx="110" cy="110" r="' + R[i] + '" stroke-width="10" stroke="' + COL[i] + '"' +
+             ' style="--c:' + C.toFixed(2) + ';--off:' + off.toFixed(2) + ';--d:' + d + ';' +
+             'filter:drop-shadow(0 0 10px ' + COL[i] + '88)"/>';
+        l += '<div class="item" style="--d:' + d + '">' +
+             '<span class="swatch" style="background:' + COL[i] + '"></span>' +
+             '<span class="k"></span><span class="pct" data-suffix="%" style="--to:' + Math.round(pct) + ';--d:' + d + '"></span></div>';
+      }
+      svg.innerHTML = s; legend.innerHTML = l;
+      legend.querySelectorAll(".item").forEach(function (row, i) {
+        var it = items[i] || {};
+        row.querySelector(".k").textContent = it.label == null ? "" : String(it.label);
+      });
+      var set = function (sel, x) { var e = document.querySelector(sel); if (e && x != null) e.textContent = String(x); };
+      set(".kicker", v.kicker); set(".title", v.title);
+    })();
+    window.__timelines = window.__timelines || {};
+    window.__timelines["main"] = { pause:function(){}, seek:function(){}, paused:function(){ return true; } };
+  </script>
+</body></html>

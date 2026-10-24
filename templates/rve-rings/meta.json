@@ -1,0 +1,5 @@
+{
+  "id": "rve-rings",
+  "name": "RVE Rings",
+  "description": "三层同心环：三条占比同时推进。改编自 activity-rings（MIT），rAF 改为 CSS stroke-dashoffset。"
+}

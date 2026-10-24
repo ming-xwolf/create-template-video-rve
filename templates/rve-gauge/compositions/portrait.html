@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="zh">
+<head><meta charset="utf-8"><title>RVE Gauge</title>
+<style>
+  @font-face{font-family:'Noto Sans SC';src:url('../assets/fonts/NotoSansSC-subset.woff2') format('woff2');font-weight:100 900;font-style:normal;font-display:block;}
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:1080px; height:1920px; overflow:hidden; background:#04060f; }
+  #root { position:relative; width:1080px; height:1920px; overflow:hidden;
+    background: radial-gradient(70% 50% at 78% 12%, rgba(56,189,248,.14), transparent 62%),
+                radial-gradient(60% 45% at 12% 88%, rgba(157,123,255,.12), transparent 66%),
+                #04060f;
+    font-family: 'Noto Sans SC', sans-serif; color:#eef3fb; }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+
+  @property --n { syntax: "<integer>"; initial-value: 0; inherits: false; }
+  .wrap { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .kicker { font-size:28px; letter-spacing:.3em; text-transform:uppercase; color:#38bdf8; font-weight:600;
+    margin-bottom:40px; opacity:0; animation:fadeUp .6s ease-out .2s forwards; }
+  .ring { position:relative; width:720px; height:720px; }
+  .ring svg { transform:rotate(-90deg); }
+  .track { fill:none; stroke:rgba(255,255,255,.08); stroke-width:16; }
+  .prog { fill:none; stroke:url(#gg); stroke-width:16; stroke-linecap:round;
+    stroke-dasharray:578.05; stroke-dashoffset:578.05;
+    filter:drop-shadow(0 0 14px rgba(56,189,248,.55));
+    animation:fill 1.9s cubic-bezier(.22,1,.36,1) .35s forwards; }
+  @keyframes fill { to { stroke-dashoffset:var(--off); } }
+  .val { position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font-size:300px; font-weight:900; letter-spacing:-.04em;
+    background:linear-gradient(150deg,#7dd3fc,#38bdf8 45%,#9d7bff);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+    filter:drop-shadow(0 0 34px rgba(56,189,248,.32));
+    counter-reset:n var(--n); animation:count 1.9s cubic-bezier(.22,1,.36,1) .35s both; }
+  .val::after { content: counter(n); }
+  @keyframes count { from { --n:0; } to { --n:var(--to); } }
+  .unit { font-size:38px; color:#9db0d6; margin-top:34px; letter-spacing:.04em;
+    opacity:0; animation:fadeUp .7s ease-out 1.5s forwards; text-align:center; }
+
+  .grain { position:absolute; inset:0; width:100%; height:100%; opacity:.05; mix-blend-mode:overlay; pointer-events:none; }
+</style></head>
+<body>
+  <div id="root" data-composition-id="main" data-start="0" data-duration="8"
+       data-width="1080" data-height="1920"
+       data-composition-variables='{"kicker": "完成度", "value": "82", "suffix": "%", "label": "任务完成率"}'>
+
+    <div class="wrap">
+      <div class="kicker"></div>
+      <div class="ring">
+        <svg width="100%" height="100%" viewBox="0 0 240 240">
+          <defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#7dd3fc"/><stop offset="55%" stop-color="#38bdf8"/><stop offset="100%" stop-color="#9d7bff"/>
+          </linearGradient></defs>
+          <circle class="track" cx="120" cy="120" r="92"/>
+          <circle class="prog" id="prog" cx="120" cy="120" r="92"/>
+        </svg>
+        <div class="val" id="val"></div>
+      </div>
+      <div class="unit"></div>
+    </div>
+
+  </div>
+  <script>
+    (function () {
+      var v = (window.__hyperframes && typeof window.__hyperframes.getVariables === "function")
+        ? window.__hyperframes.getVariables() : {};
+      var pct = Math.max(0, Math.min(100, parseFloat(String(v.value == null ? 82 : v.value)) || 0));
+      var C = 578.05;
+      var prog = document.getElementById("prog");
+      prog.style.setProperty("--off", (C * (1 - pct / 100)).toFixed(2));
+      var val = document.getElementById("val");
+      val.style.setProperty("--to", String(Math.round(pct)));
+      val.innerHTML = '<span></span>';
+      var sfx = document.createElement("span");
+      sfx.textContent = v.suffix || "%";
+      sfx.style.fontSize = ".4em"; val.appendChild(sfx);
+      var set = function (sel, x) { var el = document.querySelector(sel); if (el && x != null) el.textContent = String(x); };
+      set(".kicker", v.kicker); set(".unit", v.label);
+
+    })();
+    window.__timelines = window.__timelines || {};
+    window.__timelines["main"] = { pause: function(){}, seek: function(){}, paused: function(){ return true; } };
+</script>
+</body></html>
