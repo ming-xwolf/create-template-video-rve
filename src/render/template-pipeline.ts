@@ -34,6 +34,8 @@ import { log } from "../utils/logger.js";
 import { SKILL_ROOT, resolveFromSkillRoot } from "../paths.js";
 
 const TEMPLATES_DIR = join(SKILL_ROOT, "templates");
+/** 接受 `image` 槽位、需要把图片 vendor 进 assets/ 的模板。 */
+const IMAGE_TEMPLATES = new Set(["rve-media", "rve-zoompulse"]);
 
 const TOTAL_STEPS = 8;
 const SCENE_GAP_SEC = 0.3;
@@ -189,7 +191,7 @@ export async function runTemplatePipeline(scriptPath: string): Promise<void> {
     // HyperFrames serves each composition over http://localhost:<port>/, so an
     // absolute file:// image is blocked cross-origin. Vendor the photo into the
     // template's own assets/ dir and pass a path relative to the composition.
-    if (scene.templateId === "rve-media" && typeof inputs.image === "string" && inputs.image.trim()) {
+    if (IMAGE_TEMPLATES.has(scene.templateId) && typeof inputs.image === "string" && inputs.image.trim()) {
       const assetsDir = join(TEMPLATES_DIR, scene.templateId, "assets");
       const fileName = `scene-${scene.id}.jpg`;
       const dest = join(assetsDir, fileName);

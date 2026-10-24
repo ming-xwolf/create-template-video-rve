@@ -7,7 +7,7 @@
 设计语言（详见 `tokens.json`）：深海军蓝 `#04060f` 底 + 蓝青发光 `#38bdf8` +
 紫色情绪点 `#9d7bff` + 本地 Noto Sans SC 子集（零网络依赖）+ 胶片颗粒。
 
-> 全部 23 个模板的样例值可直接预览，也可照抄进
+> 全部 28 个模板的样例值可直接预览，也可照抄进
 > `script.json` 改。**渲染时务必显式传 `inputs`**：不传参时文字会是空的。
 > 每个模板都有 9:16（`compositions/portrait.html`）与 16:9（`index.html`）两版。
 
@@ -15,12 +15,12 @@
 
 ## 目录
 
-**① 开场与叙事（5）**  `rve-hook` · `rve-aurora` · `rve-particles` · `rve-chapter` · `rve-statement`
-**② 图文与清单（2）**  `rve-media` · `rve-list`
+**① 开场与叙事（6）**  `rve-hook` · `rve-titleintro` · `rve-aurora` · `rve-particles` · `rve-chapter` · `rve-statement`
+**② 图文与清单（4）**  `rve-media` · `rve-zoompulse` · `rve-steps` · `rve-list`
 **③ 数据可视（10）**  `rve-stat` · `rve-counter` · `rve-metrics` · `rve-gauge` · `rve-liquid` · `rve-rings` · `rve-line` · `rve-bars` · `rve-column` · `rve-dual`
-**④ 观点与消息（2）**  `rve-quote` · `rve-notify`
+**④ 观点与消息（3）**  `rve-quote` · `rve-quotecard` · `rve-notify`
 **⑤ 叠加层（3）**  `rve-lower-third` · `rve-follow` · `rve-prism`
-**⑥ 收尾（1）**  `rve-outro`
+**⑥ 收尾（2）**  `rve-outro` · `rve-endcard`
 **画幅**  [9:16 与 16:9](#两种画幅)
 
 **速查**  [按内容性质选模板](#速查按内容性质选模板)
@@ -60,6 +60,7 @@
 | 段落性质 | 用谁 |
 |---|---|
 | 开场、定调 | `rve-hook`（默认，稳重）/ `rve-aurora`（极光，更接近站点原版） |
+| 开场（纯标题、电影感） | `rve-titleintro` |
 | 核心判断、转折 | `rve-statement` |
 | 一个数/一个基准 | `rve-counter`（滚动计数）/ `rve-stat`（编辑体） |
 | 趋势、增长曲线 | `rve-line` |
@@ -68,6 +69,7 @@
 | 两条曲线对比 | `rve-dual` |
 | 多期变化 | `rve-column` |
 | 专家观点、用户评价 | `rve-quote` |
+| 单独一句话、名言（极简排版） | `rve-quotecard` |
 | 分段、章节 | `rve-chapter` |
 | 人物条（叠加在配图上） | `rve-lower-third`（overlay） |
 | 关注引导（叠加） | `rve-follow`（overlay） |
@@ -77,9 +79,12 @@
 | 多个 KPI 同屏 | `rve-metrics` |
 | 单一完成度（有仪式感） | `rve-liquid` |
 | 正式访谈署名（叠加） | `rve-prism`（overlay） |
-| 罗列、分类 | `rve-list` |
-| 有图、有现场 | `rve-media` |
-| 收尾 | `rve-outro` |
+| 罗列、分类（并列） | `rve-list` |
+| 流程、阶段、先后顺序 | `rve-steps` |
+| 有图、有现场（要字幕） | `rve-media` |
+| 氛围图、长镜头呼吸 | `rve-zoompulse` |
+| 收尾（讲品牌） | `rve-outro` |
+| 收尾（要订阅/关注 CTA） | `rve-endcard` |
 
 硬规则（`src/render/template-pipeline.ts` 里的 preflight 会检查）：
 
@@ -89,7 +94,28 @@
 
 ---
 
-# ① 开场与叙事（5）
+# ① 开场与叙事（6）
+## rve-titleintro — 电影感标题序
+
+**Role:** hook。标题上浮 → 渐变色条左→右生长 → 副标题延迟淡入，三段节奏。
+**Best for:** 片子/系列的开场、需要"安静但有质感"的第一屏；也适合片中章节大标题。
+**和谁像:** `rve-hook` 是新闻开场（标签 + 标题 + 副标题 + 按钮 + 品牌角标，信息多）；
+`rve-titleintro` 只有标题 + 一条渐变线 + 副标题，居中、留白极大。
+
+| slot       | type   | limit   | notes                                   |
+| ---------- | ------ | ------- | --------------------------------------- |
+| `title`    | string | ≤ 16 字 | 主标题（单行最佳，过长会自动换行）        |
+| `subtitle` | string | ≤ 24 字 | 副标题，字距拉开                         |
+| `note`     | string | ≤ 16 字 | 底部角标（期号/日期），留空则隐藏         |
+
+**动效**（CSS keyframes，seek-safe）：标题 0–1.33s 上浮 50px（带 −6px 回弹）、同段淡入；
+渐变线 0.67–1.67s 宽度 0→320px（竖屏 264px）；副标题 1.33–2s 淡入；角标 2s 后浮起。
+
+**注意**：标题带 `letter-spacing`，中文长标题换行后第二行同样居中；超过 16 字建议改用
+`rve-statement`。
+
+---
+
 ## rve-hook — 开场
 
 **Role:** hook。极光光斑 + 渐变大标题 + CTA，全片第一个镜头。
@@ -168,7 +194,7 @@
 
 ---
 
-# ② 图文与清单（2）
+# ② 图文与清单（4）
 ## rve-media — 配图页
 
 **Role:** body。缓慢推近的 Ken Burns + 下三分之一文案。
@@ -190,6 +216,25 @@
 > 下载/读取失败会**自动回退纯色排版**，不会出空镜。
 
 ---
+## rve-steps — 进度步骤（横向）
+
+**Role:** body。横向步骤条：圆点依次点亮、连线按序生长、激活步弹一下。
+**Best for:** 流程讲解、路线图、上线阶段、教程步骤（3–5 步最佳）。
+**和谁像:** `rve-list` 是并列清单（无先后）；`rve-steps` 强调**先后顺序**和"走到哪一步了"。
+
+| slot    | type     | limit   | notes                                  |
+| ------- | -------- | ------- | -------------------------------------- |
+| `title` | string   | ≤ 14 字 | 标题；留空则不占位                      |
+| `steps` | string[] | 2–5 项  | 步骤标签，每项 ≤ 6 字                   |
+
+**节奏**：每步 0.8s，步内先亮圆点（0–0.48s）再拉线（0.4–0.8s）；四步共 3.2s 走完。
+圆点激活时 scale 0.9 → 1.13 → 落定 1.1（对应参考里的 spring 回弹）。
+
+**注意**：步骤标签超过 6 字会换行、把整条基线压高；超过 5 步建议改用 `rve-list` 或拆成两镜。
+场景时长建议 ≥ 步骤数 × 0.8s + 0.5s。
+
+---
+
 ## rve-list — 清单
 
 **Role:** body。2–5 条，每条 icon + 等级标签。
@@ -355,8 +400,31 @@
 
 ---
 
-# ④ 观点与消息（2）
+# ④ 观点与消息（3）
+## rve-quotecard — 引文卡（编辑部式）
+
+**Role:** body。巨大引号 + 衬线引文 + 滑入署名，极简、无卡片框。
+**Best for:** 一句值得单独停留的话（名人名言、用户原话、自己的一句判断）。
+**和谁像:** `rve-quote` 是玻璃卡 + 聚光灯 + 星级（testimonial 味）；`rve-quotecard` 是纯排版，
+没有卡片、没有头像、没有星级——适合"这句话本身就够"的场合。
+
+| slot     | type   | limit    | notes                                  |
+| -------- | ------ | -------- | -------------------------------------- |
+| `quote`  | string | ≤ 42 字  | 引文正文（自动带巨大开引号）            |
+| `author` | string | ≤ 12 字  | 署名                                   |
+| `role`   | string | ≤ 16 字  | 身份；留空则连同分隔点一起隐藏          |
+| `source` | string | ≤ 20 字  | 出处（如书名/年份）；留空则不显示        |
+
+**动效**（CSS keyframes，seek-safe）：引号 0–0.5s 淡入 → 引文 0.33–1s 淡入 → 署名 1–1.5s
+淡入并从右侧滑入 40px。6 秒内时间轴走完，之后静止（适合做长停留）。
+
+**字体**：引文与引号用衬线（`Georgia → Songti SC → Noto Serif SC → serif`），中文衬线走系统字体，
+**未内嵌**（Apple 的 Songti 不可再分发）。英文/数字由 Georgia 承担。
+
+---
+
 ## rve-quote — 评论卡
+
 
 改编自 `spotlight-testimonial`（MIT）。玻璃卡片 + 聚光灯 + 星级。
 
@@ -454,7 +522,31 @@
 
 ---
 
-# ⑥ 收尾（1）
+# ⑥ 收尾（2）
+## rve-endcard — End Card（订阅卡）
+
+**Role:** outro。感谢观看 + 订阅按钮 + 社交圆点 + 工作室署名，弹性入场 + 边框呼吸光。
+**Best for:** 片尾要明确"下一步动作"（订阅/关注/去哪找我们）；比 `rve-outro` 更行动导向。
+**和谁像:** `rve-outro` 只讲品牌（lockup + tagline + URL）；`rve-endcard` 多了 CTA 按钮和 4 个社交圆点，
+适合平台投放或系列片（每期同一张卡）。
+
+| slot          | type     | limit    | notes                                       |
+| ------------- | -------- | -------- | ------------------------------------------- |
+| `headline`    | string   | ≤ 10 字  | 主标题（默认"感谢观看"）                     |
+| `cta`         | string   | ≤ 12 字  | 按钮文案（默认"订阅 · 不迷路"），渐变底       |
+| `socials`     | string[] | 0–4 项   | 社交标签，圆点里显示**首字**（"官网"/"B站"）  |
+| `studio`      | string   | ≤ 20 字  | 底部署名（字距拉开，默认频道名）              |
+| `corner_left` | string   | ≤ 8 字   | 左下角小字，可留空                           |
+| `corner_right`| string   | ≤ 8 字   | 右下角小字，可留空                           |
+
+**动效**（全部 CSS keyframes，seek-safe）：卡片 0.8→1 过冲弹性入场、边框与光晕 1.3s 呼吸、
+按钮 0.67s 后浮起、社交圆点 1s 后浮起、署名 1.25s 后浮起。动作在 2 秒内全部完成，之后只剩呼吸光。
+
+**注意**：和所有 scene 一样需要一行 `voiceText`（流水线按配音长度定时长）。想要"纯静置结尾"，
+把 `voiceText` 写成一句短收尾即可（如"感谢观看，下期见。"）。
+
+---
+
 ## rve-outro — 收尾
 
 **Role:** outro。品牌 lockup + tagline + URL，全片最后一镜。
@@ -502,11 +594,11 @@ font-family: 'Noto Sans SC', sans-serif;
 多家族混排时 HyperFrames 只会注入抓得到的那个，其余静默用系统字体。
 ## 从 RVE block 改编的模板
 
-本 pack 里 **17 个模板**改编自
+本 pack 里 **22 个模板**改编自
 [reactvideoeditor/hyperframes-templates](https://github.com/reactvideoeditor/hyperframes-templates)（MIT）：
 `rve-aurora` `rve-counter` `rve-line` `rve-gauge` `rve-bars` `rve-dual` `rve-column` `rve-quote`
 `rve-chapter` `rve-lower-third` `rve-follow` `rve-metrics` `rve-liquid` `rve-prism` `rve-notify`
-`rve-rings` `rve-particles`。
+`rve-rings` `rve-particles` `rve-endcard` `rve-quotecard` `rve-titleintro` `rve-zoompulse` `rve-steps`。
 
 改动只有三类：**槽位化**、**色板对齐 tokens**、**动画改写成可逐帧**（CSS keyframes /
 `@property` 计数器）。每个目录的 `NOTICE.md` 记录个别差异；`rve-particles` 是唯一的近似实现。

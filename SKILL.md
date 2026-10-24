@@ -18,7 +18,7 @@ whenToUse: 用户提供中文新闻/文章/口播稿（URL 或文本）要做成
 - **PROJECT_DIR** = `/Users/ming/.agents/skills/create-template-video-rve`
   （skill 本体 + 流水线 + 模板 + 依赖，**完全自包含**：`node_modules` 是本目录内的实体，
   不链接、不依赖任何其他技能）
-- 目录结构：`SKILL.md`、`templates/`（23 个模板 + `CATALOG.md` + `tokens.json` + `LICENSE-rve-mit.txt`）、
+- 目录结构：`SKILL.md`、`templates/`（28 个模板 + `CATALOG.md` + `tokens.json` + `LICENSE-rve-mit.txt`）、
   `src/`（CLI/流水线）、`package.json`、`.env`（中文 TTS 端点）。
 - 工具映射：`WebFetch` → `web_fetch`，`Read` → `read`，`Write` → `write`，`Bash` → `bash`。
 - 环境依赖：`ffmpeg`/`ffprobe` ✓、Chrome ✓、Node ✓。
@@ -60,16 +60,16 @@ whenToUse: 用户提供中文新闻/文章/口播稿（URL 或文本）要做成
 ### Step 4：读模板目录
 
 读 `PROJECT_DIR/templates/CATALOG.md`，确认槽位。**只能使用 CATALOG 里的 `templateId`。**
-现有 23 个，按用途分六组，**选型先看组、再看 CATALOG 里的槽位表**：
+现有 28 个，按用途分六组，**选型先看组、再看 CATALOG 里的槽位表**：
 
 | 组 | 模板 | 什么时候用 |
 | --- | --- | --- |
-| **① 开场与叙事**（5） | `rve-hook` `rve-aurora` `rve-particles` `rve-chapter` `rve-statement` | 定调、抛结论、章节切分 |
-| **② 图文与清单**（2） | `rve-media` `rve-list` | 有图配图，有多项配清单 |
+| **① 开场与叙事**（6） | `rve-hook` `rve-titleintro` `rve-aurora` `rve-particles` `rve-chapter` `rve-statement` | 定调、抛结论、章节切分 |
+| **② 图文与清单**（4） | `rve-media` `rve-zoompulse` `rve-steps` `rve-list` | 配图 / 氛围图 / 流程步骤 / 并列清单 |
 | **③ 数据可视**（10） | `rve-stat` `rve-counter` `rve-metrics` `rve-gauge` `rve-liquid` `rve-rings` `rve-line` `rve-bars` `rve-column` `rve-dual` | 一个数 / 多个数 / 趋势 / 对比 |
-| **④ 观点与消息**（2） | `rve-quote` `rve-notify` | 引用他人的话；多条消息并置 |
+| **④ 观点与消息**（3） | `rve-quote` `rve-quotecard` `rve-notify` | 引用他人的话；一句话单独停留用 quotecard |
 | **⑤ 叠加层**（3） | `rve-lower-third` `rve-follow` `rve-prism` | 叠在别的镜头上（`overlays`），不单独成镜 |
-| **⑥ 收尾**（1） | `rve-outro` | 片尾 |
+| **⑥ 收尾**（2） | `rve-outro` `rve-endcard` | 片尾；要订阅 CTA 用 endcard |
 
 **按内容性质挑具体模板**（"一个数"还是"两条曲线"）看 CATALOG 开头的
 「速查：按内容性质选模板」表；同组内的细微差别写在各节的"和谁像"一行里——
@@ -190,7 +190,7 @@ pyftsubset NotoSansSC[wght].ttf --text-file=chars.txt --flavor=woff2 \
 
 - 每个 scene：`{ id, type, voiceText, templateId, inputs }`；`inputs` 覆盖 CATALOG 必填槽位。
 - `scenes[0].type = "hook"`（默认 `rve-hook`；想要站点风极光开场可换 `rve-aurora`）；
-  `scenes[-1].type = "outro"`（用 `rve-outro`）。
+  `scenes[-1].type = "outro"`（讲品牌用 `rve-outro`；要订阅/关注 CTA 用 `rve-endcard`）。
 - **8–12 个 scene**；`voiceText` 合计 **350–450 字**（≈90–120s，中文约 4.5 字/秒）。
   每个 body scene **30–45 字**、只讲一个点，目标每景 6–10s。
 

@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="zh">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=1080, height=1920" />
+        <title>Zoom Pulse · 9:16</title>
+<style>
+  @font-face{font-family:'Noto Sans SC';src:url('../assets/fonts/NotoSansSC-subset.woff2') format('woff2');font-weight:100 900;font-style:normal;font-display:block;}
+  /*
+   * rve-zoompulse — 呼吸式缩放（正弦 scale 1.0 ↔ 1.1 循环）。
+   * 参考 reactvideoeditor.com 的 Remotion ZoomPulse（MIT）：本来就是 CSS keyframes
+   * （animation: zoomPulse Ns ease-in-out infinite），所以是直接移植，只需把
+   * duration / minScale / maxScale 变成槽位，并补 RVE 的压暗-颗粒-文字层。
+   * 和 rve-media 的分工：media 是"单向推进后停住"（Ken Burns，一步到位，常配文字）；
+   * 本模板是"往复呼吸"，用在需要韵律的长镜头、氛围图、产品特写。
+   * 竖屏 9:16；横屏见 ../index.html。文字层改为更靠上的底部安全区。
+   */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; }
+
+  #root {
+    position: relative; width: 1080px; height: 1920px; overflow: hidden;
+    background: #04060f; color: #eef3fb;
+    font-family: 'Noto Sans SC', sans-serif;
+  }
+
+  /* 图片层：cover 满屏，从左下角起幅，避免四边同时被裁 */
+  .frame {
+    position: absolute; inset: 0; overflow: hidden;
+    background:
+      radial-gradient(46% 38% at 72% 22%, rgba(56,189,248,.22), transparent 64%),
+      radial-gradient(52% 44% at 18% 82%, rgba(157,123,255,.18), transparent 66%),
+      #060911;
+  }
+  .pulse {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: cover; object-position: var(--focus, 50% 50%);
+    transform-origin: var(--origin, 50% 50%);
+    will-change: transform;
+    /* duration / 缩放幅度由槽位注入；ease-in-out 让 0→50→100% 像正弦一样平滑 */
+    animation: zoomPulse var(--pulse-sec, 4s) ease-in-out infinite;
+  }
+  @keyframes zoomPulse {
+    0%, 100% { transform: scale(var(--min-scale, 1)); }
+    50%      { transform: scale(var(--max-scale, 1.1)); }
+  }
+  /* 没有配图时的兜底：渐变底 + 呼吸，不出现破图 */
+  .frame.no-image .pulse { display: none; }
+  .frame.no-image::after {
+    content: ""; position: absolute; inset: -6%;
+    background:
+      radial-gradient(38% 30% at 30% 30%, rgba(56,189,248,.30), transparent 70%),
+      radial-gradient(42% 34% at 74% 70%, rgba(157,123,255,.26), transparent 72%);
+    animation: zoomPulse var(--pulse-sec, 4s) ease-in-out infinite;
+  }
+
+  /* 压暗 + 暗角，保证任何图片上白字都可读 */
+  .shade {
+    position: absolute; inset: 0; z-index: 2; pointer-events: none;
+    background:
+      linear-gradient(to top, rgba(4,6,15,.92) 0%, rgba(4,6,15,.45) 34%, transparent 62%),
+      radial-gradient(78% 70% at 50% 50%, transparent 46%, rgba(4,6,15,.55) 100%);
+  }
+  .grain {
+    position: absolute; inset: 0; z-index: 3; pointer-events: none; opacity: .055;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+
+  /* 文字层（可选）：留空则整块隐藏，变成纯氛围镜头 */
+  @keyframes riseIn { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+  .text {
+    position: absolute; left: 62px; right: 62px; bottom: 148px; z-index: 4;
+    display: flex; flex-direction: column; gap: 18px;
+  }
+  .kicker {
+    display: inline-flex; align-items: center; gap: 12px;
+    font-size: 20px; font-weight: 500; letter-spacing: .14em;
+    color: #38bdf8; text-transform: uppercase;
+    animation: riseIn .6s ease-out .1s both;
+  }
+  .kicker::before {
+    content: ""; width: 34px; height: 2px; border-radius: 2px;
+    background: linear-gradient(90deg, #38bdf8, #9d7bff);
+  }
+  .caption {
+    font-size: 44px; font-weight: 700; line-height: 1.4; letter-spacing: .01em;
+    max-width: 940px; text-shadow: 0 2px 24px rgba(0,0,0,.55);
+    animation: riseIn .7s cubic-bezier(.16,1,.3,1) .22s both;
+  }
+</style>
+    </head>
+    <body>
+        <div
+            id="root"
+            data-composition-id="main"
+            data-start="0"
+            data-duration="6"
+            data-width="1080"
+            data-height="1920"
+            data-composition-variables='{"image":"","kicker":"现场 · 资料图","caption":"电力与冷却，正在成为新的瓶颈。","pulse_seconds":4,"zoom":10,"focus":"50% 50%"}'
+        >
+            <div class="frame" id="frame">
+                <img class="pulse" id="pulse" alt="" />
+            </div>
+            <div class="shade"></div>
+            <div class="grain"></div>
+            <div class="text" id="text">
+                <div class="kicker" id="kicker"></div>
+                <div class="caption" id="caption"></div>
+            </div>
+        </div>
+
+        <script>
+            (function () {
+                var v = (window.__hyperframes && typeof window.__hyperframes.getVariables === "function")
+                    ? window.__hyperframes.getVariables() : {};
+
+                var root = document.getElementById("root");
+
+                // 呼吸节奏：周期与幅度可配。minScale 固定 1（持续以满画幅为基准放大），
+                // 这样和参考实现一致——只往上呼吸，不会露出黑边。
+                var sec = Number(v.pulse_seconds);
+                if (!isFinite(sec) || sec <= 0.5) sec = 4;
+                var zoom = Number(v.zoom);
+                if (!isFinite(zoom) || zoom <= 0 || zoom > 40) zoom = 10;
+                root.style.setProperty("--pulse-sec", sec + "s");
+                root.style.setProperty("--min-scale", "1");
+                root.style.setProperty("--max-scale", String(1 + zoom / 100));
+                if (v.focus) root.style.setProperty("--focus", String(v.focus));
+
+                var img = String(v.image || "").trim();
+                if (img) {
+                    document.getElementById("pulse").src = img;
+                } else {
+                    document.getElementById("frame").classList.add("no-image");
+                }
+
+                var kicker = document.getElementById("kicker");
+                var caption = document.getElementById("caption");
+                var hasK = v.kicker != null && String(v.kicker).length;
+                var hasC = v.caption != null && String(v.caption).length;
+                if (hasK) kicker.textContent = String(v.kicker); else kicker.style.display = "none";
+                if (hasC) caption.textContent = String(v.caption); else caption.style.display = "none";
+                if (!hasK && !hasC) document.getElementById("text").style.display = "none";
+            })();
+            window.__timelines = window.__timelines || {};
+            window.__timelines["main"] = {
+                pause: function () {},
+                seek: function () {},
+                paused: function () { return true; },
+            };
+        </script>
+    </body>
+</html>

@@ -6,7 +6,7 @@
 
 - **输出**：`video.mp4`（成片）+ `voice.mp3`（给剪映自动字幕）+ `script.txt`（分镜文本）
 - **画幅**：9:16（默认）× 16:9，每个模板两份独立排版
-- **模板**：23 个，统一 token，风格由结构性约束保证（见下方「三道闸」）
+- **模板**：28 个，统一 token，风格由结构性约束保证（见下方「三道闸」）
 - **依赖**：完全自包含——模板、依赖、TTS 启动脚本、音效目录都在本目录内
 
 ---
@@ -79,7 +79,7 @@ create-template-video-rve/
 ├── SKILL.md              # 给 AI 的操作手册（工作流、选型规则、TTS 数字读法）
 ├── README.md             # 本文件：给人看的入口
 ├── templates/
-│   ├── CATALOG.md        # 23 个模板的槽位表 + 选型速查（写文案前必读）
+│   ├── CATALOG.md        # 28 个模板的槽位表 + 选型速查（写文案前必读）
 │   ├── tokens.json       # 唯一色板来源；新模板只能从这里取色
 │   ├── fonts/            # Noto Sans SC 子集（1.8MB，GB2312 全字符集）
 │   └── rve-*/            # index.html（16:9）+ compositions/portrait.html（9:16）
@@ -99,16 +99,16 @@ create-template-video-rve/
 
 ---
 
-## 23 个模板
+## 28 个模板
 
 | 组 | 模板 | 什么时候用 |
 | --- | --- | --- |
-| **① 开场与叙事** | `rve-hook` `rve-aurora` `rve-particles` `rve-chapter` `rve-statement` | 定调、抛结论、章节切分 |
-| **② 图文与清单** | `rve-media` `rve-list` | 有图配图，有多项配清单 |
+| **① 开场与叙事** | `rve-hook` `rve-titleintro` `rve-aurora` `rve-particles` `rve-chapter` `rve-statement` | 定调、抛结论、章节切分；纯标题开场用 `rve-titleintro` |
+| **② 图文与清单** | `rve-media` `rve-zoompulse` `rve-steps` `rve-list` | 配图 / 氛围图 / 流程步骤 / 并列清单 |
 | **③ 数据可视** | `rve-stat` `rve-counter` `rve-metrics` `rve-gauge` `rve-liquid` `rve-rings` `rve-line` `rve-bars` `rve-column` `rve-dual` | 一个数 / 多个数 / 趋势 / 对比 |
-| **④ 观点与消息** | `rve-quote` `rve-notify` | 引用他人的话；多条消息并置 |
+| **④ 观点与消息** | `rve-quote` `rve-quotecard` `rve-notify` | 引用别人的话 / 一句话单独停留 / 多条消息并置 |
 | **⑤ 叠加层** | `rve-lower-third` `rve-follow` `rve-prism` | 叠在别的镜头上（`overlays`），不单独成镜 |
-| **⑥ 收尾** | `rve-outro` | 片尾 |
+| **⑥ 收尾** | `rve-outro` `rve-endcard` | 片尾；要订阅 CTA 用 `rve-endcard` |
 
 **槽位名以 [templates/CATALOG.md](templates/CATALOG.md) 为准。** 每个模板的 `data-composition-variables` 就是一份可直接照抄的示例值。
 

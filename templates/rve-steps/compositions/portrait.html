@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="zh">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=1080, height=1920" />
+        <title>Progress Steps · 9:16</title>
+<style>
+  @font-face{font-family:'Noto Sans SC';src:url('../assets/fonts/NotoSansSC-subset.woff2') format('woff2');font-weight:100 900;font-style:normal;font-display:block;}
+  /*
+   * rve-steps — 横向进度步骤（圆点依次点亮 + 连线生长 + 激活弹一下）。
+   * 参考 reactvideoeditor.com 的 Remotion ProgressSteps（MIT）：每步 0.8s，
+   * 段内先亮圆点（0–0.48s）再拉线（0.4–0.8s），激活步用 spring 弹一下。
+   * 改写为 CSS 延时动画：全片时间轴写进 animation-delay，逐帧渲染时不会依赖
+   * JS 计时器（rAF/setTimeout 在 seek 下不可靠）。色板重映射到 tokens.json。
+   * 竖屏 9:16；横屏见 ../index.html。每格变宽、圆点略小，保证四个标签不挤。
+   */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; }
+
+  :root {
+    --rve-bg: #04060f; --rve-ink: #eef3fb;
+    --rve-accent: #38bdf8; --rve-violet: #9d7bff;
+    --item-w: 232px; --dot: 50px;
+  }
+
+  #root {
+    position: relative; width: 1080px; height: 1920px; overflow: hidden;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background:
+      radial-gradient(52% 40% at 50% 30%, rgba(56, 189, 248, .12), transparent 70%),
+      linear-gradient(180deg, #0b0a1e 0%, var(--rve-bg) 68%);
+    color: var(--rve-ink);
+    font-family: 'Noto Sans SC', sans-serif;
+  }
+  #root::after {
+    content: ""; position: absolute; inset: 0; z-index: 99; pointer-events: none; opacity: .05;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+
+  @keyframes riseIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+  .title {
+    position: relative; z-index: 2;
+    font-size: 38px; font-weight: 600; letter-spacing: .06em;
+    margin-bottom: 86px; text-align: center;
+    animation: riseIn .7s cubic-bezier(.16, 1, .3, 1) .08s both;
+  }
+
+  .track {
+    position: relative; z-index: 2;
+    display: flex; align-items: flex-start; justify-content: center;
+  }
+
+  .item {
+    position: relative;
+    width: var(--item-w);
+    display: flex; flex-direction: column; align-items: center;
+  }
+
+  /* 连线：绝对定位在圆点垂直中心，从本项中心连到下一项中心 */
+  .item::after {
+    content: ""; position: absolute; top: calc(var(--dot) / 2 - 1.5px);
+    left: calc(50% + var(--dot) / 2 + 8px);
+    width: calc(100% - var(--dot) - 16px);
+    height: 3px; border-radius: 2px;
+    background: rgba(148, 163, 184, .22);
+    overflow: hidden;
+  }
+  .item:last-child::after { display: none; }
+  .item::before {
+    content: ""; position: absolute; top: calc(var(--dot) / 2 - 1.5px);
+    left: calc(50% + var(--dot) / 2 + 8px);
+    width: 0; height: 3px; border-radius: 2px;
+    background: linear-gradient(90deg, var(--rve-accent), var(--rve-violet));
+    z-index: 1;
+    animation: lineGrow .4s cubic-bezier(.4, 0, .2, 1) var(--l, 0s) forwards;
+  }
+  .item:last-child::before { display: none; }
+  @keyframes lineGrow { to { width: calc(100% - var(--dot) - 16px); } }
+
+  /* 圆点：底色描边 → 到点后填渐变（0.01s 视为瞬时翻转）+ 弹一下到 1.1 */
+  .dot {
+    position: relative;
+    width: var(--dot); height: var(--dot); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    border: 3px solid rgba(148, 163, 184, .38);
+    background: transparent;
+    animation:
+      borderIn .01s linear var(--d, 0s) forwards,
+      pop .6s cubic-bezier(.34, 1.5, .5, 1) var(--d, 0s) forwards;
+  }
+  /* 填充层用伪元素：background-image 无法在 keyframes 里平滑插值，改动画 opacity */
+  .dot .fill {
+    position: absolute; inset: 0; border-radius: 50%;
+    background: linear-gradient(135deg, var(--rve-accent), var(--rve-violet));
+    opacity: 0;
+    animation: fillIn .01s linear var(--d, 0s) forwards;
+  }
+  .dot .num {
+    position: relative; z-index: 2;
+    font-size: 20px; font-weight: 600; letter-spacing: .02em;
+    color: rgba(148, 163, 184, .85);
+    animation: numIn .01s linear var(--d, 0s) forwards;
+  }
+  @keyframes borderIn { to { border-color: var(--rve-accent); } }
+  @keyframes fillIn { to { opacity: 1; } }
+  @keyframes numIn { to { color: #04060f; } }
+  /* 参考里 spring(damping 8, stiffness 150) 的观感：先缩到 .9，过冲到 ~1.13，落定 1.1 */
+  @keyframes pop {
+    0%   { transform: scale(.9); }
+    42%  { transform: scale(1.13); }
+    100% { transform: scale(1.1); }
+  }
+
+  .label {
+    margin-top: 16px;
+    font-size: 19px; font-weight: 400; letter-spacing: .04em;
+    text-align: center; line-height: 1.35;
+    color: rgba(148, 163, 184, .8);
+    animation: labelIn .01s linear var(--d, 0s) forwards;
+  }
+  @keyframes labelIn { to { color: #7dd3fc; } }
+</style>
+    </head>
+    <body>
+        <div
+            id="root"
+            data-composition-id="main"
+            data-start="0"
+            data-duration="6"
+            data-width="1080"
+            data-height="1920"
+            data-composition-variables='{"title":"项目时间线","steps":["调研","设计","开发","上线"]}'
+        >
+            <h2 class="title"></h2>
+            <div class="track" id="track"></div>
+        </div>
+
+        <script>
+            (function () {
+                var v = (window.__hyperframes && typeof window.__hyperframes.getVariables === "function")
+                    ? window.__hyperframes.getVariables() : {};
+
+                // 每步 0.8s：0–0.48s 点亮圆点，0.4–0.8s 拉线（与参考的帧数一致）
+                var STEP = 0.8, FILL = 0.48, LINE_DELAY = 0.4;
+
+                var title = document.querySelector(".title");
+                if (title && v.title != null && String(v.title).length) title.textContent = String(v.title);
+                else if (title) title.style.display = "none";
+
+                var steps = Array.isArray(v.steps) ? v.steps.filter(function (s) { return String(s).length; }) : [];
+                if (!steps.length) steps = ["调研", "设计", "开发", "上线"];
+                if (steps.length > 5) steps = steps.slice(0, 5);
+
+                var track = document.getElementById("track");
+                steps.forEach(function (label, i) {
+                    var item = document.createElement("div");
+                    item.className = "item";
+                    item.style.setProperty("--d", (i * STEP).toFixed(2) + "s");
+                    item.style.setProperty("--l", (i * STEP + LINE_DELAY).toFixed(2) + "s");
+
+                    var dot = document.createElement("div");
+                    dot.className = "dot";
+                    var fill = document.createElement("span");
+                    fill.className = "fill";
+                    var num = document.createElement("span");
+                    num.className = "num";
+                    num.textContent = String(i + 1);
+                    dot.appendChild(fill);
+                    dot.appendChild(num);
+
+                    var txt = document.createElement("div");
+                    txt.className = "label";
+                    txt.textContent = String(label);
+
+                    item.appendChild(dot);
+                    item.appendChild(txt);
+                    track.appendChild(item);
+                });
+            })();
+            window.__timelines = window.__timelines || {};
+            window.__timelines["main"] = {
+                pause: function () {},
+                seek: function () {},
+                paused: function () { return true; },
+            };
+        </script>
+    </body>
+</html>
